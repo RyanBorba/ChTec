@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Monitor de Chamados</title>
+  <link rel="icon" type="image/png" href="logo-monitor.png">
+  <link rel="stylesheet" href="style-monitor.css">
+</head>
+<body>
+  <h2>Monitor de Chamados</h2>
+
+  <div id="contador">Chamados: 0</div>
+  <p id="equipamentoAtual"></p>
+
+  <div id="historico">
+    <div class="mensagem-vazia">Nenhum chamado recebido.</div>
+  </div>
+
+  <!-- Áudios -->
+  <audio id="somMicro" src="alertamicro.mp3" preload="auto"></audio>
+  <audio id="somImp" src="alertaimp.mp3" preload="auto"></audio>
+  <audio id="somPessoa01" src="audio-ryan.mp3" preload="auto"></audio>
+  <audio id="somPessoa02" src="audio-romulo.mp3" preload="auto"></audio>
+  <audio id="somPessoa03" src="audio-bruno.mp3" preload="auto"></audio>
+
+  <div class="botao-centro">
+    <!-- Botão para limpar chamados -->
+    <button onclick="limparHistorico()">🧹 Limpar Chamados</button>
+  </div>
+
+  <div class="assinatura">Powered by <strong>Ryan</strong></div>
+
+  <script>
+    let ultimo = "";
+    let tempoReset;
+    let totalChamados = 0;
+    let ultimoElemento = null;
+    let somLiberado = false;
+
+    const historico = document.getElementById("historico");
+
+    // Função que simula o clique invisível para desbloquear o áudio no carregamento
+    function desbloquearSom() {
+      const sons = [
+        document.getElementById("somMicro"),
+        document.getElementById("somImp"),
+        document.getElementById("somPessoa01"),
+        document.getElementById("somPessoa02"),
+        document.getElementById("somPessoa03")
+      ];
+
+      // Tocar e depois pausar para garantir que o som seja "desbloqueado"
+      sons.forEach(som => {
+        som.play().then(() => {
+          som.pause();
+          som.currentTime = 0;
+        }).catch(e => console.log("Erro ao liberar som:", e)); // No caso de erro, loga no console
+      });
+
+      somLiberado = true;  // Agora os sons estão liberados
+    }
+
+    // Carregar o som automaticamente ao abrir a página
+    window.addEventListener('load', function() {
+      desbloquearSom();  // Chama a função que libera o som assim que a página carrega
+    });
+
+    async function checar() {
+      try {
+        const res = await fetch("alerta.txt?nocache=" + Math.random());
+        const txt = (await res.text()).trim();
+
+        if (txt && txt !== ultimo) {
+          ultimo = txt;
+          const tipo = txt.split(".")[0];
+          const equipamentoAtual = document.getElementById("equipamentoAtual");
+          const contador = document.getElementById("contador");
+          const mensagemVazia = historico.querySelector(".mensagem-vazia");
+
+          if (mensagemVazia) mensagemVazia.remove();
+
+          let icone = "";
+          let tipoNome = "";
+          let som = null;
+
+          switch (tipo) {
+            case "micro":
+              icone = "💻";
+              tipoNome = "MICRO";
+              equipamentoAtual.innerText = "💻 NOVO ALERTA: MICRO!";
+              som = document.getElementById("somMicro");
+              break;
+            case "imp":
+              icone = "🖨️";
+              tipoNome = "IMPRESSORA";
+              equipamentoAtual.innerText = "🖨️ NOVO ALERTA: IMPRESSORA!";
+              som = document.getElementById("somImp");
+              break;
+            case "pessoa01":
+              icone = "👨🏻‍🔧";
+              tipoNome = "RYAN";
+              equipamentoAtual.innerText = "🚨 NOVO ALERTA: Ryan!";
+              som = document.getElementById("somPessoa01");
+              break;
+            case "pessoa02":
+              icone = "👨🏻‍🔧";
+              tipoNome = "ROMULO";
+              equipamentoAtual.innerText = "🚨 NOVO ALERTA: Romulo!";
+              som = document.getElementById("somPessoa02");
+              break;
+            case "pessoa03":
+              icone = "👨🏻‍🔧";
+              tipoNome = "BRUNO";
+              equipamentoAtual.innerText = "🚨 NOVO ALERTA: Bruno!";
+              som = document.getElementById("somPessoa03");
+              break;
+            default:
+              icone = "❓";
+              tipoNome = "DESCONHECIDO";
+              equipamentoAtual.innerText = "🚨 Alerta desconhecido!";
+          }
+
+          if (som && somLiberado) {
+            som.play().catch(err => console.log("Erro ao tocar áudio:", err));
+          }
+
+          equipamentoAtual.classList.add("alerta");
+
+          const hora = new Date().toLocaleTimeString("pt-BR", { hour12: false });
+
+          const novaEntrada = document.createElement("div");
+          novaEntrada.className = "registro novo";
+          novaEntrada.innerHTML = `
+            <div class="equipamento"><span>${icone}</span> ${tipoNome}</div>
+            <div class="hora">${hora}</div>
+          `;
+
+          if (ultimoElemento) ultimoElemento.classList.remove("novo");
+          historico.prepend(novaEntrada);
+          ultimoElemento = novaEntrada;
+
+          totalChamados++;
+          contador.textContent = `Chamados: ${totalChamados}`;
+
+          while (historico.children.length > 20) {
+            historico.removeChild(historico.lastChild);
+          }
+
+          // Limpa alerta
+          fetch("limpar_alerta.php").catch(e => console.log("Erro ao limpar alerta:", e));
+
+          clearTimeout(tempoReset);
+          tempoReset = setTimeout(() => {
+            equipamentoAtual.innerText = "";
+            equipamentoAtual.classList.remove("alerta");
+          }, 10000);
+        }
+      } catch (e) {
+        console.log("Erro:", e);
+      }
+    }
+
+    // Limpar histórico de chamados
+    function limparHistorico() {
+      historico.innerHTML = '<div class="mensagem-vazia">Nenhum chamado recebido.</div>';
+      totalChamados = 0;
+      document.getElementById("contador").textContent = "Chamados: 0";
+      ultimoElemento = null;
+    }
+
+    setInterval(checar, 2000);
+  </script>
+</body>
+</html>

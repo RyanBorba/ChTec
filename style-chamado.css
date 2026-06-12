@@ -1,0 +1,106 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #0d1b2a, #1b2a41); /**  #0d1b2a, #1b2a41 **/
+  color: #f0f4f8;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+h2 {
+  font-size: 2.0rem;
+  margin-bottom: 40px;
+  color: #77d6ff;
+  text-shadow: 0 0 15px rgba(119, 214, 255, 0.5);
+  letter-spacing: 1px;
+}
+
+.botoes-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 35px;
+}
+
+.botoes-tipo {
+  display: flex;
+  flex-direction: row;
+  gap: 25px;
+  justify-content: center;
+  align-items: center;
+}
+
+.botoes-nomes {
+  display: flex;
+  flex-direction: row;
+  gap: 25px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; 
+}
+
+button {
+  background: linear-gradient(145deg, #1b263b, #324a67);
+  color: #ffffff;
+  border: none;
+  padding: 18px 40px;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+button:hover {
+  background: linear-gradient(145deg, #415a77, #5a7fa0);
+  box-shadow: 0 12px 25px rgba(65, 90, 119, 0.6);
+  transform: translateY(-3px) scale(1.05);
+}
+
+button:active {
+  transform: translateY(0) scale(1);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+}
+
+#status {
+  margin-top: 30px;
+  font-size: 18px;
+  color: #a9c1de;
+  min-height: 24px;
+  transition: color 0.3s ease;
+}
+
+footer {
+  position: absolute;
+  bottom: 15px;
+  font-size: 14px;
+  color: #77aaff;
+  opacity: 0.8;
+}
+
+.assinatura {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  font-size: 14px;
+  color: #77aaff;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.assinatura:hover {
+  opacity: 1;
+  transform: scale(1.05);
+  text-shadow: 0 0 10px rgba(119, 214, 255, 0.7);
+}

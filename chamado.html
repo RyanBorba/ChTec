@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>ChTec</title>
+  <link rel="icon" type="image/png" href="logo-chamar.png">
+  <link rel="stylesheet" href="style-chamado.css">
+</head>
+<body>
+  <h2>🔔 Chamar Técnico</h2>
+  
+  <div class="botoes-container">
+
+  <div class="botoes-topo">
+    <button onclick="enviarAlerta('micro')">🖥️ Chamar MICRO 🎅🏻</button>
+    <button onclick="enviarAlerta('imp')">🖨️ Chamar IMP 🎅🏻</button>
+  </div>
+
+  <div class="botoes-nomes">
+    <button onclick="enviarAlerta('pessoa01')">🪛 Ryan 🪛</button>
+    <button onclick="enviarAlerta('pessoa02')">🖨️ Romulo 🖨️</button>
+    <button onclick="enviarAlerta('pessoa03')">🏍️ Bruno 🏍️</button>
+  </div>
+
+</div>
+
+  <div class="assinatura">Powered by <strong>Ryan</strong></div>
+
+  <p id="status"></p>
+
+  <footer>Pressione <strong>B</strong> para chamar MICRO rapidamente</footer>
+
+  <script>
+    async function enviarAlerta(tipo) {
+      try {
+        const res = await fetch("enviar_alerta.php?tipo=" + tipo + "&nocache=" + Math.random());
+        const txt = await res.text();
+        const statusEl = document.getElementById("status");
+        statusEl.innerText = txt || ("Alerta (" + tipo.toUpperCase() + ") enviado!");
+        statusEl.style.color = tipo === "micro" ? "#e00000" : "#ffd677";
+      } catch (error) {
+        const statusEl = document.getElementById("status");
+        statusEl.innerText = "Erro ao enviar alerta.";
+        statusEl.style.color = "#ff6b6b";
+      }
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key.toLowerCase() === "b") {
+        enviarAlerta("micro");
+      }
+    });
+  </script>
+</body>
+</html>
